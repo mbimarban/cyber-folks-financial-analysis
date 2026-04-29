@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cyber_Folks — CFO Board Pack 2023–2025</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy:  #1F2D3D;
+  --blue:  #2C4770;
+  --gray:  #374151;
+  --lgray: #6B7A8D;
+  --rule:  #D1D9E0;
+  --green: #1A6B3C;
+  --amber: #7D4E00;
+  --red:   #842029;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  background: #fff;
+  color: var(--gray);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100dvh;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--navy); height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+}
+.nav-brand { color: #fff; font-size: 13px; font-weight: 700; }
+.nav-brand span { color: #7AA8C8; font-weight: 400; margin-left: 8px; font-size: 12px; }
+.nav-links a {
+  color: #7AA8C8; text-decoration: none; font-size: 10px;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 0 10px; line-height: 44px; display: inline-block;
+  border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; border-bottom-color: #7AA8C8; }
+
+/* ── DECK (horizontal container) ──────────────────────────── */
+.deck {
+  display: flex;
+  height: 100dvh;
+  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── SLIDE ARROWS ────────────────────────────────────────── */
+.arrow-nav {
+  position: fixed; right: 28px; bottom: 28px; z-index: 98;
+  display: flex; flex-direction: row; gap: 6px;
+}
+.arrow-btn {
+  width: 40px; height: 40px;
+  background: var(--navy); color: #fff; border: none;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0.75; transition: opacity .2s;
+  border-radius: 2px;
+}
+.arrow-btn:hover { opacity: 1; }
+.arrow-btn:disabled { opacity: 0.25; cursor: default; }
+
+/* ── SLIDE COUNTER ───────────────────────────────────────── */
+.slide-counter {
+  position: fixed; right: 28px; top: 56px; z-index: 98;
+  font-size: 10px; color: var(--lgray); letter-spacing: 1px;
+  text-align: right;
+}
+
+/* ── SLIDE ───────────────────────────────────────────────── */
+.slide {
+  min-width: 100vw;
+  width: 100vw;
+  height: 100dvh;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--rule);
+  opacity: 0.65;
+  transition: opacity 0.4s ease;
+}
+.slide.is-active { opacity: 1; }
+.slide:last-child { border-right: none; }
+
+.slide-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 68px 64px 28px;
+  height: 100%;
+  max-height: calc(100dvh - 44px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.slide-inner::-webkit-scrollbar { width: 4px; }
+.slide-inner::-webkit-scrollbar-track { background: transparent; }
+.slide-inner::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+
+/* ── TABLE / CONTENT SCROLL WRAP ────────────────────────── */
+.table-wrap, .content-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 60vh;
+  margin-bottom: 14px;
+}
+.table-wrap::-webkit-scrollbar,
+.content-scroll::-webkit-scrollbar { width: 4px; }
+.table-wrap::-webkit-scrollbar-track,
+.content-scroll::-webkit-scrollbar-track { background: #F2F4F6; }
+.table-wrap::-webkit-scrollbar-thumb,
+.content-scroll::-webkit-scrollbar-thumb { background: var(--lgray); border-radius: 2px; }
+
+/* ── COVER ───────────────────────────────────────────────── */
+.cover-wrap {
+  display: flex; flex-direction: column;
+  justify-content: center; flex: 1;
+  max-width: 720px;
+}
+.cover-tag { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--lgray); margin-bottom: 12px; }
+.cover h1  { font-size: 32px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.cover-sub { font-size: 13px; color: var(--lgray); margin-bottom: 28px; }
+.cover-divider { width: 40px; height: 2px; background: var(--navy); margin-bottom: 28px; }
+.cover-metrics { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.cm { display: flex; align-items: baseline; gap: 10px; }
+.cm-val { font-size: 16px; font-weight: 700; color: var(--navy); min-width: 280px; }
+.cm-d { font-size: 13px; }
+.up   { color: var(--green); }
+.warn { color: var(--amber); }
+.dn   { color: var(--red); }
+.cover-q { padding: 12px 16px; border-left: 3px solid var(--navy); font-size: 14px; font-weight: 600; color: var(--navy); background: #F8F9FA; margin-bottom: 28px; }
+.cover-note { font-size: 11px; color: var(--lgray); border-top: 1px solid var(--rule); padding-top: 14px; }
+
+/* ── SECTION STRUCTURE ───────────────────────────────────── */
+.s-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--lgray); margin-bottom: 6px; }
+.s-title { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1.25; margin-bottom: 18px; }
+
+.key-msg { border-left: 3px solid var(--navy); padding: 9px 16px; background: #F8F9FA; margin-bottom: 20px; }
+.key-msg-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--lgray); margin-bottom: 3px; }
+.key-msg p { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.45; }
+
+.narrative { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 20px; }
+.narrative p { margin-bottom: 8px; }
+.narrative p:last-child { margin-bottom: 0; }
+.narrative strong { color: var(--navy); }
+
+/* ── CHART ───────────────────────────────────────────────── */
+.chart-block { margin-bottom: 16px; }
+.chart-title { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 10px; line-height: 1.4; }
+.chart-cv { position: relative; }
+.chart-cv.h240 { height: 240px; }
+.chart-cv.h280 { height: 280px; }
+.chart-src { font-size: 10px; color: var(--lgray); margin-top: 5px; }
+
+/* ── IMPLICATION ─────────────────────────────────────────── */
+.impl {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding-top: 16px; border-top: 1px solid var(--rule);
+  margin-top: auto; padding-bottom: 4px;
+}
+.impl-lbl { font-size: 9px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--lgray); flex-shrink: 0; min-width: 92px; padding-top: 2px; }
+.impl-txt { font-size: 13px; color: var(--gray); line-height: 1.55; }
+.impl-txt strong { color: var(--navy); }
+
+/* ── TABLES ──────────────────────────────────────────────── */
+.b-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+.b-table th { background: var(--navy); color: #fff; padding: 7px 12px; text-align: right; font-size: 10px; letter-spacing: .4px; font-weight: 600; }
+.b-table th:first-child { text-align: left; }
+.b-table td { padding: 6px 12px; border-bottom: 1px solid #EEF1F4; color: var(--gray); }
+.b-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.b-table tr.tot td { background: #F2F5F8; font-weight: 700; color: var(--navy); border-top: 1px solid var(--navy); border-bottom: 1px solid var(--navy); font-size: 13px; }
+.b-table tr.hdr td { background: #F2F5F8; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--lgray); padding: 5px 12px; font-weight: 600; }
+.b-table tr:nth-child(even):not(.tot):not(.hdr) td { background: #FAFBFC; }
+.pos { color: var(--green); font-weight: 600; }
+.neg { color: var(--red); }
+.sub td:first-child { padding-left: 24px !important; color: var(--lgray) !important; font-size: 11px !important; }
+
+.r-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.r-table th { text-align: left; font-size: 10px; letter-spacing: .8px; text-transform: uppercase; color: var(--lgray); padding: 0 0 8px; border-bottom: 1px solid var(--rule); }
+.r-table td { padding: 8px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.r-table td:not(:last-child) { padding-right: 16px; }
+
+.plan-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+.plan-table th { background: var(--navy); color: #fff; padding: 7px 14px; text-align: left; font-size: 10px; letter-spacing: .4px; }
+.plan-table th:not(:first-child) { text-align: right; }
+.plan-table td { padding: 7px 14px; border-bottom: 1px solid var(--rule); }
+.plan-table td:not(:first-child) { text-align: right; }
+.plan-table tr:nth-child(even) td { background: #F8F9FA; }
+.plan-table tr.tot td { font-weight: 700; color: var(--navy); background: #EDF2F7; border-top: 1px solid var(--navy); }
+
+.tag { display: inline-block; padding: 2px 7px; font-size: 10px; font-weight: 700; letter-spacing: .2px; }
+.tag.g { background: #D4EDDA; color: var(--green); }
+.tag.a { background: #FFF3CD; color: var(--amber); }
+.tag.r { background: #F8D7DA; color: var(--red); }
+.tag.n { background: #E9ECEF; color: var(--lgray); }
+
+/* ── VALUATION GRID ──────────────────────────────────────── */
+.val-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule); margin-bottom: 16px; }
+.vc { background: #fff; padding: 14px 16px; }
+.vc.hd { background: var(--navy); }
+.vc-lbl { font-size: 10px; color: var(--lgray); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; }
+.vc.hd .vc-lbl { color: #7AA8C8; }
+.vc-val { font-size: 17px; font-weight: 700; color: var(--navy); }
+.vc.hd .vc-val { color: #fff; font-size: 14px; font-weight: 600; }
+.vc-note { font-size: 11px; color: var(--lgray); margin-top: 2px; }
+.vc.bull .vc-val { color: var(--green); }
+.vc.base .vc-val { color: var(--amber); }
+.vc.bear .vc-val { color: var(--red); }
+
+/* ── RECS ────────────────────────────────────────────────── */
+.rec-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.rec { display: flex; gap: 14px; }
+.rec-n { font-size: 12px; font-weight: 700; color: var(--navy); min-width: 20px; padding-top: 1px; }
+.rec h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.rec p  { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+/* ── VERDICT ─────────────────────────────────────────────── */
+.verdict { padding-top: 16px; border-top: 2px solid var(--navy); }
+.verdict-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--lgray); margin-bottom: 8px; }
+.verdict p { font-size: 14px; color: var(--navy); line-height: 1.75; }
+.verdict strong { font-weight: 700; }
+
+/* ── SLIDE FOOTER ────────────────────────────────────────── */
+.slide-foot {
+  display: flex; justify-content: space-between;
+  padding-top: 12px; border-top: 1px solid var(--rule);
+  font-size: 10px; color: var(--lgray);
+  margin-top: 20px;
+}
+
+/* ── APPENDIX ────────────────────────────────────────────── */
+.appendix-center {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex: 1; text-align: center; color: var(--lgray);
+}
+
+/* ── SCROLL HINT ─────────────────────────────────────────── */
+.slide-inner.has-scroll::after {
+  content: "↕ scroll";
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #C0C8D2;
+  pointer-events: none;
+  z-index: 90;
+}
+
+/* ── MOBILE ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .slide-inner { padding: 56px 20px 20px; }
+  nav { padding: 0 16px; }
+  .nav-links { display: none; }
+  .s-title { font-size: 18px; }
+  .arrow-nav { right: 12px; bottom: 12px; }
+  .val-grid { grid-template-columns: repeat(2,1fr); }
+  .table-wrap, .content-scroll { max-height: 46vh; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">cyber_Folks Group<span>GPW: CBF · CFO Board Pack 2023–2025</span></span>
+  <div class="nav-links" id="navLinks">
+    <a href="#" onclick="goTo(0);return false;">Intro</a>
+    <a href="#" onclick="goTo(1);return false;">Model</a>
+    <a href="#" onclick="goTo(2);return false;">Wzrost</a>
+    <a href="#" onclick="goTo(3);return false;">Marża</a>
+    <a href="#" onclick="goTo(4);return false;">Cash</a>
+    <a href="#" onclick="goTo(5);return false;">Dług</a>
+    <a href="#" onclick="goTo(6);return false;">Plan</a>
+    <a href="#" onclick="goTo(7);return false;">Wycena</a>
+    <a href="#" onclick="goTo(8);return false;">Decyzja</a>
+    <a href="cbf_CFO_Report_v4.xlsx" target="_blank" style="font-weight:700;">Excel</a>
+  </div>
+</nav>
+
+<!-- SLIDE COUNTER -->
+<div class="slide-counter" id="slideCounter">1 / 9</div>
+
+<!-- ARROW NAVIGATION -->
+<div class="arrow-nav">
+  <button class="arrow-btn" id="btnPrev" onclick="goTo(current-1)" title="Poprzedni slajd (←)">◀</button>
+  <button class="arrow-btn" id="btnNext" onclick="goTo(current+1)" title="Następny slajd (→)">▶</button>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- ── SLIDE 0: COVER ─────────────────────────────────────── -->
+<div class="slide is-active" id="slide-0">
+  <div class="slide-inner">
+    <div class="cover-wrap cover">
+      <div class="cover-tag">CFO Board Pack · Materiał dla Zarządu</div>
+      <h1>cyber_Folks Group</h1>
+      <p class="cover-sub">GPW: CBF · Analiza 2023–2025 · Źródło: Raporty roczne CBF</p>
+      <div class="cover-divider"></div>
+      <div class="cover-metrics">
+        <div class="cm"><span class="cm-val">Przychody 2025: 855 mln PLN</span><span class="cm-d up">+30.3% YoY</span></div>
+        <div class="cm"><span class="cm-val">Adj. EBITDA margin: 34.1%</span><span class="cm-d up">+7.4 pp · rekordowy poziom</span></div>
+        <div class="cm"><span class="cm-val">Levered FCF: 60 mln PLN</span><span class="cm-d warn">−6% YoY · presja kosztu długu</span></div>
+        <div class="cm"><span class="cm-val">Net Debt / EBITDA: 1.25×</span><span class="cm-d warn">vs 0.50× w 2024 · efekt M&amp;A</span></div>
+      </div>
+      <div class="cover-q">Kluczowe pytanie: czy EBITDA z przejęć odrośnie szybciej niż koszty finansowania i integracji?</div>
+      <div class="cover-note">Pozycje oznaczone „est." to szacunki analityczne · Pełne dane źródłowe: cbf_CFO_Report_v4.xlsx</div>
+    </div>
+    <div class="slide-foot"><span>01 / 09</span><span>cyber_Folks SA · Raporty roczne 2023–2025</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 1: MODEL ──────────────────────────────────────── -->
+<div class="slide" id="slide-1">
+  <div class="slide-inner">
+    <div class="s-label">01 · Model biznesowy</div>
+    <div class="s-title">Recurring revenue i pay-as-you-grow: wzrost klienta automatycznie przekłada się na wzrost przychodu Grupy — bez dodatkowych kosztów pozyskania</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>Model asset-light przy CAGR 33.6% i capex intensity ~7% potwierdza skalowalność bez proporcjonalnego wzrostu inwestycji. Kluczowa luka: NRR i churn nie są raportowane.</p>
+    </div>
+    <div class="narrative">
+      <p>cyber_Folks dostarcza infrastrukturę e-commerce (hosting, domeny, sklepy, komunikacja) w modelu subskrypcyjnym. Deferred revenue — gotówka z przedpłaconych abonamentów — wpływa przed wykonaniem usługi, naturalnie finansując działalność. Recurring revenue zwiększa przewidywalność CFO i obniża ryzyko cykliczne.</p>
+      <p>Kluczowe wskaźniki jakości modelu — NRR, churn rate, ARPU — <strong>nie są raportowane publicznie</strong>. Bez tych danych zarząd nie może ocenić, czy wzrost jest organiczny i trwały, czy wynika wyłącznie z konsolidacji przejętych spółek.</p>
+    </div>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt"><strong>NRR, churn i ARPU</strong> powinny być standardowym KPI kwartalnym. Bez nich decyzje akwizycyjne są podejmowane bez wiedzy o kondycji rdzenia biznesu.</span>
+    </div>
+    <div class="slide-foot"><span>02 / 09</span><span>cyber_Folks SA · Raporty roczne 2023–2025</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 2: WZROST ─────────────────────────────────────── -->
+<div class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="s-label">02 · Wzrost</div>
+    <div class="s-title">EBITDA rośnie +66% vs przychody +30% — dźwignia operacyjna materializuje się, lecz bez podziału organic/M&amp;A trwałość wzrostu pozostaje nieweryfikowalna</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>Każda dodatkowa złotówka przychodu w 2025 generuje ~58 groszy EBITDA — model skaluje się efektywnie. CAGR przychodów: 33.6% w 2 lata.</p>
+    </div>
+    <div class="chart-block">
+      <div class="chart-title">EBITDA rośnie szybciej niż przychody (+66% vs +30%), potwierdzając materializację dźwigni operacyjnej od 2025</div>
+      <div class="chart-cv h280"><canvas id="cGrowth"></canvas></div>
+      <div class="chart-src">Raporty roczne cyber_Folks SA · mln PLN</div>
+    </div>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt">Podział <strong>organic vs M&amp;A growth</strong> — krytyczna luka danych. Odpowiedzialność: CFO / Controlling. Termin: raport kwartalny Q1 2026.</span>
+    </div>
+    <div class="slide-foot"><span>03 / 09</span><span>cyber_Folks SA · Raporty roczne 2023–2025</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 3: MARŻA ──────────────────────────────────────── -->
+<div class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="s-label">03 · Marża</div>
+    <div class="s-title">Marża EBITDA +7.4 pp r/r do 34.1% — marża netto spada −8.4 pp pod wpływem amortyzacji PPA i kosztów odsetkowych po M&amp;A</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>Wzrost operacyjny jest silny i trwały. Rozbieżność między marżą EBITDA a netto to strukturalny efekt lewarowanej strategii M&amp;A — nie erozja modelu.</p>
+    </div>
+    <div class="chart-block">
+      <div class="chart-title">Marża EBITDA 29.4% → 26.7% → 34.1% (dip 2024 = koszt integracji). Marża netto pod presją kosztów M&amp;A: 18.2% → 23.4% → 15.0%</div>
+      <div class="chart-cv h280"><canvas id="cMargin"></canvas></div>
+      <div class="chart-src">NI margin 2025 = NI 127.8 mln PLN / Przychody 855.2 mln PLN</div>
+    </div>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt">Ujawnienie <strong>kwoty amortyzacji PPA</strong> (MSSF 3) jest niezbędne do oddzielenia zniekształcenia księgowego od realnego zysku. Odpowiedzialność: CFO / Auditor.</span>
+    </div>
+    <div class="slide-foot"><span>04 / 09</span><span>cyber_Folks SA · Raporty roczne 2023–2025</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 4: CASH QUALITY ───────────────────────────────── -->
+<div class="slide" id="slide-4">
+  <div class="slide-inner">
+    <div class="s-label">04 · Jakość gotówki</div>
+    <div class="s-title">EBITDA 292 mln → Levered FCF 60 mln: koszt długu pochłania 34% przyrostu gotówki operacyjnej</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>CFO/EBITDA &gt;89% przez 3 lata — przychody realne. Efekt nożyc: EBITDA +116 mln PLN YoY, Levered FCF −3.9 mln PLN YoY.</p>
+    </div>
+    <div class="chart-block">
+      <div class="chart-title">Waterfall 2025 (mln PLN) — Capex i koszty finansowania konsumują ~79% EBITDA zanim gotówka trafi do akcjonariuszy</div>
+      <div class="chart-cv h240"><canvas id="cWaterfall"></canvas></div>
+      <div class="chart-src">Odsetki i inne pozycje finansowe — szacunki. Capex = CFO − Unlevered FCF.</div>
+    </div>
+    <div class="table-wrap">
+    <table class="b-table">
+      <thead><tr><th style="width:36%">Pozycja</th><th>2023</th><th>2024</th><th>2025</th><th>Δ 24→25</th></tr></thead>
+      <tbody>
+        <tr class="tot"><td>Adj. EBITDA</td><td>141 300</td><td>175 300</td><td>291 700</td><td class="pos">+116 400</td></tr>
+        <tr class="tot"><td>▸ CFO</td><td>136 900</td><td>187 479</td><td>261 194</td><td class="pos">+73 715</td></tr>
+        <tr class="tot"><td>▸ Unlevered FCF</td><td>108 100</td><td>148 379</td><td>201 150</td><td class="pos">+52 771</td></tr>
+        <tr class="tot"><td>▸ Levered FCF</td><td>4 600</td><td>64 200</td><td>60 300</td><td class="neg">−3 900</td></tr>
+        <tr><td>CFO / EBITDA</td><td>96.9%</td><td>107.0%</td><td>89.5%</td><td class="neg">−17.5 pp</td></tr>
+        <tr><td>Levered FCF / EBITDA</td><td>3.3%</td><td>36.6%</td><td>20.7%</td><td class="neg">−15.9 pp</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt"><strong>Levered FCF zastępuje EBITDA jako KPI nr 1</strong> — po lewarowanych przejęciach EBITDA daje fałszywy obraz wartości generowanej dla akcjonariuszy.</span>
+    </div>
+    <div class="slide-foot"><span>05 / 09</span><span>Capex = CFO − Unlevered FCF · Odsetki — szacunki analityczne</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 5: DŁUG ───────────────────────────────────────── -->
+<div class="slide" id="slide-5">
+  <div class="slide-inner">
+    <div class="s-label">05 · Dług i M&amp;A</div>
+    <div class="s-title">Net Debt wzrósł 4.2× do 364 mln PLN — dźwignia 1.25× kontrolowana, koszty odsetkowe +355% r/r ograniczają przestrzeń na kolejne przejęcia</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>NI spada −17% YoY przy EBITDA +66% — amortyzacja PPA i koszty odsetkowe rozjeżdżają wyniki. Headroom do kowenantu ≤2.5× wynosi ~1.25× EBITDA.</p>
+    </div>
+    <div class="chart-block">
+      <div class="chart-title">Net Debt wzrósł 4.2× po M&amp;A — dźwignia 1.25× EBITDA wymaga aktywnego zarządzania i planu delewarowania</div>
+      <div class="chart-cv h240"><canvas id="cDebt"></canvas></div>
+      <div class="chart-src">Net Debt = kredyty + leasing − środki pieniężne · Leverage: szacunek CBF</div>
+    </div>
+    <table class="r-table">
+      <thead><tr><th style="width:38%">Wskaźnik</th><th>2023</th><th>2024</th><th>2025</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Net Debt / EBITDA</strong></td><td>~0×</td><td>0.50×</td><td>1.25×</td><td><span class="tag a">Monitor</span></td></tr>
+        <tr><td><strong>EBITDA / Odsetki (est.)</strong></td><td>~35×</td><td>~16×</td><td>~5.8×</td><td><span class="tag a">Monitor</span></td></tr>
+        <tr><td><strong>Odsetki / CFO (est.)</strong></td><td>~3%</td><td>~6%</td><td>~19%</td><td><span class="tag a">Monitor</span></td></tr>
+        <tr><td><strong>Headroom do kowenantu ≤2.5×</strong></td><td>—</td><td>2.0×</td><td>1.25×</td><td><span class="tag g">OK</span></td></tr>
+      </tbody>
+    </table>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt">Ustalić <strong>Net Debt/EBITDA ≤2.0×</strong> jako wewnętrzny limit z harmonogramem delewarowania. Kolejne przejęcia: analiza wpływu na Levered FCF — nie EBITDA pro forma.</span>
+    </div>
+    <div class="slide-foot"><span>06 / 09</span><span>cyber_Folks SA · Raporty roczne 2023–2025 · szacunki odsetkowe</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 6: FCF PLAN ───────────────────────────────────── -->
+<div class="slide" id="slide-6">
+  <div class="slide-inner">
+    <div class="s-label">06 · Plan CFO</div>
+    <div class="s-title">Levered FCF 60 → 150 mln PLN: cztery dźwignie zarządcze w horyzoncie 24 miesięcy — problem leży poniżej EBITDA, nie w EBITDA</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>Poprawa konwersji EBITDA do FCF ma większy wpływ na wartość dla akcjonariuszy niż kolejny punkt procentowy wzrostu przychodów.</p>
+    </div>
+    <div class="table-wrap">
+    <table class="plan-table">
+      <thead><tr><th>Dźwignia CFO</th><th>Działanie</th><th>Potencjał (mln PLN)</th><th>Horyzont</th><th>Trudność</th></tr></thead>
+      <tbody>
+        <tr><td><strong>EBITDA ↑</strong></td><td>Synergie cross-sell + pricing power</td><td class="pos">+40 – 60</td><td>12–24 m</td><td>Średnia</td></tr>
+        <tr><td><strong>Working Capital</strong></td><td>Poprawa DPO / cash cycle</td><td class="pos">+20 – 30</td><td>6–12 m</td><td>Średnia</td></tr>
+        <tr><td><strong>Capex discipline</strong></td><td>ROI-linked capex, redukcja growth</td><td class="pos">+10 – 20</td><td>12 m</td><td>Niska</td></tr>
+        <tr><td><strong>Delewarowanie</strong></td><td>Spłata kredytu → niższe odsetki</td><td class="pos">+30 – 50</td><td>18–36 m</td><td>Wysoka</td></tr>
+        <tr class="tot"><td>Levered FCF (cel)</td><td>Scenariusz base case</td><td class="pos">~150</td><td>24 m</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="narrative">
+      <p>Największa dźwignia to redukcja kosztów odsetkowych przez delewarowanie — wymaga jednak powstrzymania się od nowych przejęć lub pozyskania kapitału własnego. To decyzja strategiczna, którą zarząd musi podjąć świadomie, a nie odkładać.</p>
+    </div>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt">Wzrost FCF z 60 do 150 mln PLN przy multiplu 15–18× implikuje potencjalne <strong>podwojenie wartości equity dla akcjonariuszy</strong>.</span>
+    </div>
+    <div class="slide-foot"><span>07 / 09</span><span>Scenariusz analityczny · WACC 10% · g = 3%</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 7: WYCENA ─────────────────────────────────────── -->
+<div class="slide" id="slide-7">
+  <div class="slide-inner">
+    <div class="s-label">07 · Wycena (DCF / FCF multiple)</div>
+    <div class="s-title">FCF 60 mln PLN → equity ~0.4–0.5 mld PLN. Realizacja planu FCF 150 mln PLN → equity ~1.4–1.8 mld PLN. Rynek wycenia przyszłą gotówkę — nie dzisiejsze EBITDA.</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>EBITDA robi prezentację. FCF robi wycenę. 80% Enterprise Value pochodzi z Terminal Value — rynek wycenia zdolność do utrzymania FCF ~150 mln PLN stabilnie.</p>
+    </div>
+    <div class="val-grid">
+      <div class="vc hd"><div class="vc-lbl">Scenariusz</div><div class="vc-val">FCF → EV → Equity</div><div class="vc-note">WACC 10% · g=3% · Net Debt ~364 mln</div></div>
+      <div class="vc bear"><div class="vc-lbl">Bear — brak poprawy</div><div class="vc-val">FCF ~60 mln</div><div class="vc-note">Multiple 12–15× · EV 720–900 mln<br>Equity ~360–540 mln PLN</div></div>
+      <div class="vc base"><div class="vc-lbl">Base — częściowa poprawa</div><div class="vc-val">FCF ~120 mln</div><div class="vc-note">Multiple 15× · EV ~1.8 mld<br>Equity ~1.1 mld PLN</div></div>
+      <div class="vc bull"><div class="vc-lbl">Bull — pełna realizacja</div><div class="vc-val">FCF ~150 mln</div><div class="vc-note">Multiple 15–18× · EV ~2.25–2.7 mld<br>Equity ~1.4–1.8 mld PLN</div></div>
+    </div>
+    <div class="narrative">
+      <p>Terminal Value: TV = FCF × (1+g) / (WACC−g) = 150 × 1.03 / 0.07 ≈ <strong>2.21 mld PLN</strong>. Dyskontowany 5-letni model: PV przepływów ~370 mln + PV TV ~1.37 mld = EV ~1.74 mld. Po odjęciu Net Debt: equity ~1.4 mld. Różnica bear vs bull: <strong>~1 mld PLN wartości equity</strong>.</p>
+    </div>
+    <div class="impl">
+      <span class="impl-lbl">Implikacja</span>
+      <span class="impl-txt">Największa dźwignia wartości to <strong>poprawa konwersji EBITDA do FCF i delewarowanie</strong> — nie kolejny punkt procentowy wzrostu przychodów.</span>
+    </div>
+    <div class="slide-foot"><span>08 / 09</span><span>Wycena poglądowa · WACC 10% · g 3% · FCF multiple 12–18×</span></div>
+  </div>
+</div>
+
+
+<!-- ── SLIDE 8: DECYZJA ────────────────────────────────────── -->
+<div class="slide" id="slide-8">
+  <div class="slide-inner">
+    <div class="s-label">08 · Decyzja inwestycyjna</div>
+    <div class="s-title">HOLD / Selective Buy — silny model operacyjny ograniczony przez FCF po odsetkach. Trigger do BUY: Levered FCF &gt;100 mln PLN</div>
+    <div class="key-msg">
+      <div class="key-msg-lbl">Key message</div>
+      <p>Inwestor nie kupuje wzrostu — kupuje przyszłą gotówkę. Decydujący test 2026: czy EBITDA z akwizycji odrośnie szybciej niż koszty długu i integracji?</p>
+    </div>
+    <div class="table-wrap">
+    <table class="r-table" style="margin-bottom:0;">
+      <thead><tr><th style="width:35%">Obszar</th><th style="width:42%">Ocena</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Jakość gotówki operacyjnej</strong></td><td>CFO/EBITDA &gt;89% — przychody realne</td><td><span class="tag g">OK</span></td></tr>
+        <tr><td><strong>Dźwignia operacyjna</strong></td><td>EBITDA rośnie 2.2× szybciej niż rev</td><td><span class="tag g">OK</span></td></tr>
+        <tr><td><strong>Levered FCF</strong></td><td>Spada mimo wzrostu EBITDA</td><td><span class="tag a">Monitor</span></td></tr>
+        <tr><td><strong>Dźwignia finansowa</strong></td><td>1.25× — bezpieczna, trend rosnący</td><td><span class="tag a">Monitor</span></td></tr>
+        <tr><td><strong>Organic growth / NRR</strong></td><td>Brak danych — luka decyzyjna</td><td><span class="tag r">Risk</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="rec-list">
+      <div class="rec"><span class="rec-n">1.</span><div><h4>Levered FCF jako KPI nr 1 — zastąpić EBITDA w raportowaniu zarządczym i inwestorskim</h4></div></div>
+      <div class="rec"><span class="rec-n">2.</span><div><h4>Net Debt/EBITDA ≤2.0× z harmonogramem delewarowania przed kolejnym przejęciem</h4></div></div>
+      <div class="rec"><span class="rec-n">3.</span><div><h4>NRR, churn, organic growth, PPA amortisation — obowiązkowo do Q2 2026</h4></div></div>
+    </div>
+    <div class="verdict">
+      <div class="verdict-lbl">Wniosek zarządczy</div>
+      <p>cyber_Folks ma <strong>udowodnioną dźwignię operacyjną i wysoką jakość gotówki</strong>. Priorytet 2026: utrzymanie wzrostu Levered FCF przy rosnącym koszcie finansowania. Jeśli EBITDA z przejęć nie odrośnie szybciej niż koszty długu, rynek przeklasyfikuje spółkę z <strong>platformy wzrostowej</strong> na <strong>akwizytora dźwigniowego</strong>.</p>
+    </div>
+    <div class="slide-foot"><span>09 / 09 · cyber_Folks Group (GPW: CBF)</span><span>Dane: Raporty roczne CBF 2023–2025</span></div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const NAVY='#1F2D3D', GRAY='#6B7A8D', BLUE='#2C4770', RED='#842029', GREEN='#1A6B3C', TEAL='#1A5A6E';
+Chart.defaults.font.family = "-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif";
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = GRAY;
+const tip  = { backgroundColor:NAVY, titleColor:'#fff', bodyColor:'#C8D8E8', padding:9, cornerRadius:2, displayColors:false };
+const noG  = { display:false };
+const yG   = { color:'#E5E7EB' };
+const noB  = { display:false };
+
+// 1 — Wzrost (grouped bars, no borderRadius)
+new Chart(document.getElementById('cGrowth'),{
+  type:'bar',
+  data:{ labels:['2023','2024','2025'], datasets:[
+    { label:'Przychody', data:[480,656,855], backgroundColor:NAVY },
+    { label:'Adj. EBITDA', data:[141,175,292], backgroundColor:GRAY }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:14, usePointStyle:true } },
+      tooltip:{ ...tip, displayColors:true, callbacks:{ label:c=>` ${c.dataset.label}: ${c.parsed.y} mln PLN` } } },
+    scales:{ x:{ grid:noG }, y:{ grid:yG, border:noB, ticks:{ callback:v=>v+' mln' } } }
+  }
+});
+
+// 2 — Marża (lines, tension:0, no fill)
+new Chart(document.getElementById('cMargin'),{
+  type:'line',
+  data:{ labels:['2023','2024','2025'], datasets:[
+    { label:'Adj. EBITDA margin', data:[29.4,26.7,34.1], borderColor:NAVY, tension:0, pointRadius:5, pointBackgroundColor:NAVY, fill:false },
+    { label:'Net Income margin',  data:[18.2,23.4,15.0], borderColor:RED,  tension:0, pointRadius:5, pointBackgroundColor:RED,  fill:false, borderDash:[5,4] }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:14, usePointStyle:true } },
+      tooltip:{ ...tip, displayColors:true, callbacks:{ label:c=>` ${c.dataset.label}: ${c.parsed.y}%` } } },
+    scales:{ x:{ grid:noG }, y:{ grid:yG, border:noB, ticks:{ callback:v=>v+'%' }, min:0, max:44 } }
+  }
+});
+
+// 3 — Waterfall (floating bars [start,end])
+const wfL = ['EBITDA','− Podatki','± WC','= CFO','− Capex','= Unl.FCF','− Odsetki','− Inne fin.','= Lev.FCF'];
+const wfD = [[0,291.7],[253.7,291.7],[253.7,261.2],[0,261.2],[201.2,261.2],[0,201.2],[151.2,201.2],[60.3,151.2],[0,60.3]];
+const wfC = [NAVY,RED,GREEN,BLUE,RED,BLUE,RED,RED,'#4A1B1E'];
+new Chart(document.getElementById('cWaterfall'),{
+  type:'bar',
+  data:{ labels:wfL, datasets:[{ data:wfD, backgroundColor:wfC, borderWidth:0 }] },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false },
+      tooltip:{ ...tip, callbacks:{ label:c=>{ const[lo,hi]=c.raw; const tot=[0,3,5,8].includes(c.dataIndex); return tot?` Total: ${hi} mln PLN`:` ${hi>lo?'+':'−'}${Math.abs(hi-lo).toFixed(1)} mln PLN`; } } } },
+    scales:{ x:{ grid:noG, ticks:{ font:{ size:10 } } }, y:{ grid:yG, border:noB, ticks:{ callback:v=>v+' mln' }, min:0, max:330 } }
+  }
+});
+
+// 4 — Dług (bars + line dual axis)
+new Chart(document.getElementById('cDebt'),{
+  type:'bar',
+  data:{ labels:['2023','2024','2025'], datasets:[
+    { label:'Net Debt (mln PLN)', data:[0,86.8,363.9], backgroundColor:NAVY, yAxisID:'y' },
+    { label:'Net Debt/EBITDA (×)', data:[null,0.50,1.25], type:'line', borderColor:RED, tension:0, pointBackgroundColor:RED, pointRadius:5, fill:false, spanGaps:false, yAxisID:'y2' }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:14, usePointStyle:true } }, tooltip:{ ...tip, displayColors:true } },
+    scales:{
+      x:{ grid:noG },
+      y:  { position:'left',  grid:yG, border:noB, ticks:{ callback:v=>v+' mln' } },
+      y2: { position:'right', grid:noG, border:noB, ticks:{ callback:v=>v+'×' }, min:0, max:3 }
+    }
+  }
+});
+
+// ── NAVIGATION ────────────────────────────────────────────────
+const deck     = document.getElementById('deck');
+const slides   = Array.from(document.querySelectorAll('.slide'));
+const navLinks = Array.from(document.querySelectorAll('.nav-links a'));
+const counter  = document.getElementById('slideCounter');
+const btnPrev  = document.getElementById('btnPrev');
+const btnNext  = document.getElementById('btnNext');
+let current    = 0;
+const COOLDOWN = 700;
+
+function goTo(idx) {
+  idx = Math.max(0, Math.min(idx, slides.length - 1));
+  current = idx;
+  deck.style.transform = `translateX(${-current * 100}vw)`;
+  updateUI();
+}
+
+function updateUI() {
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === slides.length - 1;
+  slides.forEach((s,i) => s.classList.toggle('is-active', i === current));
+  navLinks.forEach((a,i) => a.classList.toggle('active', i === current));
+  // scroll hint: show on active slide if content overflows
+  const inner = slides[current].querySelector('.slide-inner');
+  if (inner) inner.classList.toggle('has-scroll', inner.scrollHeight > inner.clientHeight + 8);
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const next = ['ArrowRight','PageDown',' '];
+  const prev = ['ArrowLeft','PageUp'];
+  if (next.includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+  if (prev.includes(e.key)) { e.preventDefault(); goTo(current - 1); }
+  if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  if (e.key === 'End')  { e.preventDefault(); goTo(slides.length - 1); }
+});
+
+// ── MOUSE WHEEL ───────────────────────────────────────────────
+let lastWheel = 0;
+window.addEventListener('wheel', e => {
+  const inner = slides[current]?.querySelector('.slide-inner');
+  const dir   = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+
+  // if slide content can scroll and isn't at edge — let it scroll naturally
+  if (inner && inner.scrollHeight > inner.clientHeight + 8) {
+    const atTop    = inner.scrollTop <= 0;
+    const atBottom = inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 4;
+    if ((dir < 0 && !atTop) || (dir > 0 && !atBottom)) return; // natural scroll
+  }
+
+  e.preventDefault();
+  const now = Date.now();
+  if (now - lastWheel < COOLDOWN) return;
+  lastWheel = now;
+  goTo(current + (dir > 0 ? 1 : -1));
+}, { passive: false });
+
+// ── TOUCH / SWIPE (horizontal) ────────────────────────────────
+let touchX = 0;
+window.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+window.addEventListener('touchend',   e => {
+  const delta = touchX - e.changedTouches[0].clientX;
+  if (Math.abs(delta) > 48) goTo(current + (delta > 0 ? 1 : -1));
+}, { passive: true });
+
+// Init
+updateUI();
+</script>
+</body>
+</html>
